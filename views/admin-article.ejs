@@ -1,0 +1,145 @@
+<html>
+    <head>
+        <title><%=title%></title>
+        <%- include common/head.ejs %>
+
+        <style>
+            html, body, #editor {
+                margin: 0;
+                height: 100%;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                color: #333;
+            }
+
+            #editor{
+                height:auto;
+                padding-bottom:50px;
+            }
+
+            textarea, #editor div {
+                display: inline-block;
+                width: 49%;
+                height: 100%;
+                vertical-align: top;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                padding: 0 20px;
+            }
+
+            textarea {
+                border: none;
+                border-right: 1px solid #ccc;
+                resize: none;
+                outline: none;
+                background-color: #f6f6f6;
+                font-size: 14px;
+                font-family: 'Monaco', courier, monospace;
+                padding: 20px;
+            }
+
+            .editor-btn{
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px;
+                background: #b3b3b3;
+            }
+
+            code {
+                color: #f66;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include common/menu.ejs %>
+
+        <div class="admin-content">
+
+            <div id="editor">
+                <input type='file' @change='upload($event)'>
+                <h1><input v-model="title"></h1>
+                <textarea v-model="input" debounce="300"></textarea>
+                <div v-html="input | marked"></div>
+            </div>
+
+            <div class="editor-btn">
+                <button @click='save'>save</button>
+            </div>
+        </div>
+        
+        <script src="http://apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
+        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src='/javascripts/marked.js'></script>
+        <script>
+
+        $(function(){
+            new Vue({
+                el: '.admin-content',
+                data: {
+                    input: '<%= data.content %>',
+                    title: '<%= data.title %>',
+                    id: '<%= data.id %>'
+                },
+                created:function(){
+                    this.$data.input = this.$data.input
+                                        .replace(/&quot/g, '"')
+                                        .replace(/&amp;/g, '&')
+                                        .replace(/&lt;/g, '<')
+                                        .replace(/&gt;/g, '>')
+                                        .replace(/&nbsp;/g, ' ')
+                },
+                methods:{
+                    save:function(){
+                        $.ajax({
+                            url:'/api/article/save',
+                            method:'post',
+                            data:{
+                                content:this.$data.input,
+                                title:this.$data.title,
+                                id:this.$data.id
+                            }
+                        })
+                        .then(function(res){
+                            if(res.errno==0){
+                                alert("保存成功！")
+                            }
+                        })
+                    },
+                    upload:function(e){
+                        var fd = new FormData();
+                        var _this = e.target;
+                        var value = _this.files[0];
+                        fd.append('image', value);
+
+                        $.ajax({
+                            url:'/api/upload',
+                            method:'post',
+                            data:fd,
+                            contentType:false,
+                            processData:false,
+                        })
+                        .then(function(res){
+                            if(res.errno==0){
+                                alert("保存成功！");
+                                console.log(res.data.url);
+                            }
+                        })
+
+                    },
+                },
+                filters: {
+                    marked: function(value){
+                        return marked(value);
+                    }
+                }
+            })
+
+        })
+            
+
+        </script>
+    </body>
+</html>

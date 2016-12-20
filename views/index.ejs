@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title><%=title%></title>
+        <%- include common/head.ejs %>
+    </head>
+    <body>
+        <%- include common/menu.ejs %>
+        
+
+        <div class="content">
+            <% if(datas.length){ %>
+                <div class="archive">
+                    <% datas.forEach(function(item){ %>                        
+                        <div class="archive-item">
+                            <div>
+                                <a class="archive-item__link" href="/article/<%= item.id %>">
+                                    <span class="archive-item__link__time"><%= item.time%></span><span class="archive-item__link__title"><%= item.title %></span>
+                                </a>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+
+
+        <%- include common/foot.ejs %>
+    </body>
+</html>

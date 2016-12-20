@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <title><%=title%></title>
+    </head>
+    <body>
+        <% if(datas.length){ %>
+            <ul>
+                <% datas.forEach(function(item){ %>
+                <li>
+                    <%= item.title %>
+                    <%= item.create_time%>
+                    <%= item.update_time%>
+                </li>
+                <% }) %>
+            </ul>
+        <% } %>
+    </body>
+</html>
