@@ -4,7 +4,10 @@ var list = require('../service/list.js')
 var getArticle = require('../service/article.js')
 
 
-/* GET home page. */
+router.get('/', function(req, res, next) {
+    res.redirect('/admin/list')
+})
+
 router.get('/list', function(req, res, next) {
 
     list.open(function(close) {
@@ -19,7 +22,7 @@ router.get('/list', function(req, res, next) {
     })
 });
 
-router.get('/article/:id', function(req, res, next) {
+router.get('/article/edit/:id', function(req, res, next) {
     var id = req.params.id;
     getArticle.open(function(close) {
         this.get(id, function(err, data) {
@@ -32,6 +35,10 @@ router.get('/article/:id', function(req, res, next) {
 
         })
     })
+});
+
+router.get('/article/new', function(req, res, next) {
+    res.render('admin-article', { title: "new_article_admin", data: {} });
 });
 
 module.exports = router;

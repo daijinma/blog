@@ -3,13 +3,17 @@
         <title><%=title%></title>
     </head>
     <body>
+        <a  href='/admin/article/new'>新建日志</a>
+        <br/>
         <% if(datas.length){ %>
             <ul>
                 <% datas.forEach(function(item){ %>
-                <li>
-                    <%= item.title %>
-                    <%= item.create_time%>
-                    <%= item.update_time%>
+                <li >
+                    <a href='/admin/article/edit/<%= item.id %>'>
+                        <%= item.title %>
+                        <%= item.create_time%>
+                        <%= item.update_time%>
+                    </a>
                 </li>
                 <% }) %>
             </ul>

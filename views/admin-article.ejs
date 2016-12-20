@@ -60,6 +60,7 @@
 
             <div id="editor">
                 <input type='file' @change='upload($event)'>
+                <p>{{newUrl}}</p>
                 <h1><input v-model="title"></h1>
                 <textarea v-model="input" debounce="300"></textarea>
                 <div v-html="input | marked"></div>
@@ -81,7 +82,8 @@
                 data: {
                     input: '<%= data.content %>',
                     title: '<%= data.title %>',
-                    id: '<%= data.id %>'
+                    id: '<%= data.id %>',
+                    newUrl:'',
                 },
                 created:function(){
                     this.$data.input = this.$data.input
@@ -109,9 +111,10 @@
                         })
                     },
                     upload:function(e){
+                        var _this = this;
                         var fd = new FormData();
-                        var _this = e.target;
-                        var value = _this.files[0];
+                        var input = e.target;
+                        var value = input.files[0];
                         fd.append('image', value);
 
                         $.ajax({
@@ -123,7 +126,7 @@
                         })
                         .then(function(res){
                             if(res.errno==0){
-                                alert("保存成功！");
+                                _this.newUrl = res.data.url;
                                 console.log(res.data.url);
                             }
                         })
