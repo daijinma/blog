@@ -5,6 +5,10 @@ var getArticle = require('../service/article.js')
 
 router.get('/:id', function(req, res, next) {
     var id = req.params.id;
+    if (!Number(id)) {
+        next();
+        return;
+    }
     getArticle.open(function(close) {
         this.get(id, function(err, data) {
             this.close();

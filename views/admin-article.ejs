@@ -20,6 +20,7 @@
                 display: inline-block;
                 width: 49%;
                 height: 100%;
+                overflow:scroll;
                 vertical-align: top;
                 -webkit-box-sizing: border-box;
                 -moz-box-sizing: border-box;
@@ -47,7 +48,7 @@
                 padding: 10px;
                 background: #b3b3b3;
             }
-
+            .hide{display:none;}
             code {
                 color: #f66;
             }
@@ -59,8 +60,7 @@
         <div class="admin-content">
 
             <div id="editor">
-                <input type='file' @change='upload($event)'>
-                <p>{{newUrl}}</p>
+                <input type='file' id='fileUpload' @change='upload($event)'>
                 <h1><input v-model="title"></h1>
                 <textarea v-model="input" debounce="300"></textarea>
                 <div v-html="input | marked"></div>
@@ -68,39 +68,55 @@
 
             <div class="editor-btn">
                 <button @click='save'>save</button>
+                <button @click='uploadClick'>upload</button>
+                <p>{{newUrl}}</p>
             </div>
         </div>
+
+        <div id='content' class='hide'><%= data.content %></div>
         
         <script src="http://apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
         <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src='/javascripts/marked.js'></script>
+        <script src='/javascripts/underscore-min.js'></script>
         <script>
 
         $(function(){
             new Vue({
                 el: '.admin-content',
                 data: {
-                    input: '<%= data.content %>',
+                    input: '',
                     title: '<%= data.title %>',
                     id: '<%= data.id %>',
                     newUrl:'',
                 },
                 created:function(){
-                    this.$data.input = this.$data.input
-                                        .replace(/&quot/g, '"')
+                
+                    var value = document.querySelectorAll('#content')[0].innerHTML
+                    this.$data.input = value
+                                        .replace(/\\n/g, '\r\n')
+                                        .replace(/\\t/g, '\r\n')
                                         .replace(/&amp;/g, '&')
+                                        .replace(/&quot;/g, '"')
                                         .replace(/&lt;/g, '<')
                                         .replace(/&gt;/g, '>')
                                         .replace(/&nbsp;/g, ' ')
                 },
                 methods:{
                     save:function(){
+
+                        var content = this.$data.input
+                                // .replace(/&/g, '&amp;')
+                                // .replace(/"/g, '&quot;')
+                                // .replace(/</g, '&lt;')
+                                // .replace(/>/g, '&gt;')
+                                // .replace(/\s/g, '&nbsp;')
                         $.ajax({
                             url:'/api/article/save',
                             method:'post',
                             data:{
-                                content:this.$data.input,
-                                title:this.$data.title,
+                                content:content.trim(),
+                                title:this.$data.title.trim(),
                                 id:this.$data.id
                             }
                         })
@@ -109,6 +125,9 @@
                                 alert("保存成功！")
                             }
                         })
+                    },
+                    uploadClick:function(){
+                        document.querySelectorAll('#fileUpload')[0].click();
                     },
                     upload:function(e){
                         var _this = this;

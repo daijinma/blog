@@ -18,12 +18,16 @@ database.save = function(param, callback) {
     var sql = `INSERT INTO ${table} (title, content, update_time, create_time) VALUES ("${title}", "${content}", "${update_time}", "${create_time}")`;
 
     if (id) {
-        sql = `UPDATE ${table} SET title="${title}",content="${content}",update_time="${update_time}" WHERE id=${id};`;
+        sql = [
+            'UPDATE ' + table + ' SET title=?,content=?,update_time=? WHERE id=?;', [
+                title, content, update_time, id
+            ]
+        ];
     }
 
     var _this = this;
 
-    this.connection.query(sql, function(err, data, fields) {
+    this.connection.query(sql[0], sql[1], function(err, data, fields) {
         if (err) {
             callback.call(_this, err.errno, err.code)
             return;

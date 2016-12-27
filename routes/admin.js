@@ -24,11 +24,15 @@ router.get('/list', function(req, res, next) {
 
 router.get('/article/edit/:id', function(req, res, next) {
     var id = req.params.id;
+    if (!Number(id)) {
+        next();
+        return;
+    }
     getArticle.open(function(close) {
         this.get(id, function(err, data) {
             this.close();
             if (err < 0) {
-                res.render('error', { title: '' });
+                res.render('error', { title: '', data: '' });
             } else {
                 res.render('admin-article', { title: data.title + "_admin", data: data });
             }
