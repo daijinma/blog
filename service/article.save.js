@@ -15,7 +15,14 @@ database.save = function(param, callback) {
         return;
     }
 
-    var sql = `INSERT INTO ${table} (title, content, update_time, create_time) VALUES ("${title}", "${content}", "${update_time}", "${create_time}")`;
+    var sql = [
+        'INSERT INTO ' + table + ' SET ?', {
+            title: title,
+            content: content,
+            update_time: update_time,
+            create_time: create_time
+        }
+    ];
 
     if (id) {
         sql = [
